@@ -50,7 +50,7 @@ class HomeScreen extends StatelessWidget {
                     Chip(
                       avatar: const Icon(Icons.visibility, size: 18),
                       label: Text('Aplikasi dibuka: ${provider.visitCount} kali'),
-                      backgroundColor: Colors.deepPurple.withOpacity(0.1),
+                      backgroundColor: Colors.deepPurple.withValues(alpha: 0.1),
                     ),
                     const SizedBox(height: 16),
                     if (provider.user.isLoggedIn) ...[

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../providers/user_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -12,6 +11,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _emailController;
+  final TextEditingController _favoriteController = TextEditingController();
   bool _controllersInitialized = false;
   @override
   void didChangeDependencies() {
@@ -155,6 +155,53 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
                       ),
+                      const Divider(height: 40, thickness: 1.5),
+                      const Text(
+                        'Daftar Favorit / Hobi',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _favoriteController,
+                              decoration: const InputDecoration(
+                                labelText: 'Tambah Favorit Baru',
+                                border: OutlineInputBorder(),
+                                isDense: true,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton.filled(
+                            onPressed: () {
+                              if (_favoriteController.text.trim().isNotEmpty) {
+                                provider.addFavorite(_favoriteController.text);
+                                _favoriteController.clear();
+                              }
+                            },
+                            icon: const Icon(Icons.add),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      provider.favorites.isEmpty
+                          ? const Text(
+                              'Belum ada favorit yang ditambahkan.',
+                              style: TextStyle(color: Colors.grey),
+                            )
+                          : Wrap(
+                              spacing: 8.0,
+                              runSpacing: 4.0,
+                              children: provider.favorites.map((item) {
+                                return Chip(
+                                  label: Text(item),
+                                  onDeleted: () => provider.removeFavorite(item),
+                                  deleteIconColor: Colors.red,
+                                );
+                              }).toList(),
+                            ),
                       const SizedBox(height: 16),
                       Card(
                         color: Colors.amber[50],
