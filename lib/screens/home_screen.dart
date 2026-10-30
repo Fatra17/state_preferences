@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
 import '../providers/user_provider.dart';
 import 'profile_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
-    final provider = UserProvider.of(context);
+    // Mengakses state menggunakan provider package
+    final provider = context.watch<UserProvider>();
 
     return Scaffold(
       appBar: AppBar(
@@ -50,44 +52,28 @@ class HomeScreen extends StatelessWidget {
                     Chip(
                       avatar: const Icon(Icons.visibility, size: 18),
                       label: Text('Aplikasi dibuka: ${provider.visitCount} kali'),
-                      backgroundColor: Colors.deepPurple.withValues(alpha: 0.1),
+                      backgroundColor: Colors.deepPurple.withOpacity(0.1),
                     ),
                     const SizedBox(height: 16),
                     if (provider.user.isLoggedIn) ...[
                       Text(
                         'Email: ${provider.user.email}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
+                        style: const TextStyle(fontSize: 14, color: Colors.grey),
                       ),
                       const SizedBox(height: 24),
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ProfileScreen(),
-                            ),
-                          );
-                        },
-                        icon: const Icon(Icons.person),
-                        label: const Text('Lihat Profil'),
-                      ),
-                    ] else ...[
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ProfileScreen(),
-                            ),
-                          );
-                        },
-                        icon: const Icon(Icons.login),
-                        label: const Text('Login / Daftar'),
-                      ),
                     ],
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ProfileScreen(),
+                          ),
+                        );
+                      },
+                      icon: Icon(provider.user.isLoggedIn ? Icons.person : Icons.login),
+                      label: Text(provider.user.isLoggedIn ? 'Lihat Profil' : 'Login / Daftar'),
+                    ),
                   ],
                 ),
               ),

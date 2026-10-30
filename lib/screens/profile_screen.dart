@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../providers/user_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
@@ -13,11 +15,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late TextEditingController _emailController;
   final TextEditingController _favoriteController = TextEditingController();
   bool _controllersInitialized = false;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_controllersInitialized) return;
-    final provider = UserProvider.of(context);
+
+    final provider = context.read<UserProvider>();
     _nameController = TextEditingController(text: provider.user.name);
     _emailController = TextEditingController(text: provider.user.email);
     _controllersInitialized = true;
@@ -27,12 +31,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
+    _favoriteController.dispose();
     super.dispose();
   }
 
   void _saveProfile() {
     if (_formKey.currentState!.validate()) {
-      final provider = UserProvider.of(context);
+      final provider = context.read<UserProvider>();
       final updatedUser = provider.user.copyWith(
         name: _nameController.text.trim(),
         email: _emailController.text.trim(),
@@ -62,7 +67,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              UserProvider.of(context).logout();
+              context.read<UserProvider>().logout();
               Navigator.pop(context);
             },
             child: const Text('Logout', style: TextStyle(color: Colors.red)),
@@ -74,7 +79,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = UserProvider.of(context);
+    final provider = context.watch<UserProvider>();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profil'),
@@ -103,11 +109,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       const CircleAvatar(
                         radius: 50,
                         backgroundColor: Colors.deepPurple,
-                        child: Icon(
-                          Icons.person,
-                          size: 60,
-                          color: Colors.white,
-                        ),
+                        child: Icon(Icons.person, size: 60, color: Colors.white),
                       ),
                       const SizedBox(height: 24),
                       TextFormField(
@@ -216,17 +218,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   const SizedBox(width: 8),
                                   const Text(
                                     'Catatan Keamanan',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style: TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               ),
                               const SizedBox(height: 8),
                               const Text(
                                 'Data disimpan di SharedPreferences (plaintext). '
-                                'Jangan simpan password atau data sensitif di sini. '
-                                'Gunakan secure storage untuk data sensitif.',
+                                'Jangan simpan password atau data sensitif di sini.',
                                 style: TextStyle(fontSize: 12),
                               ),
                             ],
