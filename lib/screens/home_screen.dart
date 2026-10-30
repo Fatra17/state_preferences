@@ -46,6 +46,12 @@ class HomeScreen extends StatelessWidget {
                       ),
                       textAlign: TextAlign.center,
                     ),
+                    const SizedBox(height: 8),
+                    Chip(
+                      avatar: const Icon(Icons.visibility, size: 18),
+                      label: Text('Aplikasi dibuka: ${provider.visitCount} kali'),
+                      backgroundColor: Colors.deepPurple.withOpacity(0.1),
+                    ),
                     const SizedBox(height: 16),
                     if (provider.user.isLoggedIn) ...[
                       Text(
