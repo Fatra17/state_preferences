@@ -8,11 +8,23 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = UserProvider.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
         backgroundColor: Colors.deepPurple,
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: Icon(
+              provider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+            ),
+            onPressed: () {
+              provider.toggleTheme(!provider.isDarkMode);
+            },
+            tooltip: 'Ganti Tema',
+          ),
+        ],
       ),
       body: provider.isLoading
           ? const Center(child: CircularProgressIndicator())

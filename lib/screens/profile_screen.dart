@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../providers/user_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -11,21 +12,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _emailController;
-  
-  @override
-  void initState() {
-    super.initState();
-    _nameController = TextEditingController();
-    _emailController = TextEditingController();
-  }
-
+  bool _controllersInitialized = false;
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    
+    if (_controllersInitialized) return;
     final provider = UserProvider.of(context);
-    _nameController.text = provider.user.name;
-    _emailController.text = provider.user.email;
+    _nameController = TextEditingController(text: provider.user.name);
+    _emailController = TextEditingController(text: provider.user.email);
+    _controllersInitialized = true;
   }
 
   @override

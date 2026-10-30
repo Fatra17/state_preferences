@@ -8,12 +8,16 @@ class UserProvider extends InheritedWidget {
   final Function(User) updateUser;
   final VoidCallback logout;
   final bool isLoading;
+  final bool isDarkMode;
+  final Function(bool) toggleTheme;
   const UserProvider({
     super.key,
     required this.user,
     required this.updateUser,
     required this.logout,
     required this.isLoading,
+    required this.isDarkMode,
+    required this.toggleTheme,
     required super.child,
   });
   static UserProvider of(BuildContext context) {
@@ -24,7 +28,9 @@ class UserProvider extends InheritedWidget {
 
   @override
   bool updateShouldNotify(UserProvider oldWidget) {
-    return oldWidget.user != user || oldWidget.isLoading != isLoading;
+    return oldWidget.user != user || 
+        oldWidget.isLoading != isLoading ||
+        oldWidget.isDarkMode != isDarkMode;
   }
 }
 
@@ -32,6 +38,7 @@ class UserProvider extends InheritedWidget {
 class UserProviderWrapper extends StatefulWidget {
   final Widget child;
   const UserProviderWrapper({super.key, required this.child});
+
   @override
   State<UserProviderWrapper> createState() => _UserProviderWrapperState();
 }
@@ -39,6 +46,8 @@ class UserProviderWrapper extends StatefulWidget {
 class _UserProviderWrapperState extends State<UserProviderWrapper> {
   User _user = User(name: '', email: '');
   bool _isLoading = true;
+  bool _isDarkMode = false;
+
   @override
   void initState() {
     super.initState();
@@ -51,8 +60,11 @@ class _UserProviderWrapperState extends State<UserProviderWrapper> {
     final name = prefs.getString('user_name') ?? '';
     final email = prefs.getString('user_email') ?? '';
     final isLoggedIn = prefs.getBool('is_logged_in') ?? false;
+    final isDarkMode = prefs.getBool('is_dark_mode') ?? false;
+
     setState(() {
       _user = User(name: name, email: email, isLoggedIn: isLoggedIn);
+      _isDarkMode = isDarkMode;
       _isLoading = false;
     });
   }
@@ -69,6 +81,14 @@ class _UserProviderWrapperState extends State<UserProviderWrapper> {
     setState(() {
       _user = newUser;
       _isLoading = false;
+    });
+  }
+
+  Future<void> _toggleTheme(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('is_dark_mode', value);
+    setState(() {
+      _isDarkMode = value;
     });
   }
 
@@ -89,6 +109,8 @@ class _UserProviderWrapperState extends State<UserProviderWrapper> {
       updateUser: _updateUser,
       logout: _logout,
       isLoading: _isLoading,
+      isDarkMode: _isDarkMode,
+      toggleTheme: _toggleTheme,
       child: widget.child,
     );
   }
